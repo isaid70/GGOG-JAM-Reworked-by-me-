@@ -88,7 +88,13 @@ public class statSystemForPlayer : MonoBehaviour
             StartCoroutine(DamageCD());
         }
     }
-
+    public void GetHeal(float healAmount)
+    {
+        prevHp = currentHp;
+        currentHp += healAmount;
+        currentHp = Mathf.Clamp(currentHp, 0, maxHp);
+        Flash();
+    }
 
     private IEnumerator DamageCD()
     {

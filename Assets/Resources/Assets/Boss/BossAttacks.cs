@@ -1,14 +1,20 @@
 using System.Collections;
 using UnityEngine;
 
+public enum BossPhase
+{
+    Phase1,
+    Phase2
+}
+
+
 public class BossAttacks : MonoBehaviour
 {
 
-
+    public BossPhase CurrentPhase = BossPhase.Phase1;
 
     public AudioSource sourceslot;
     public AudioClip clipslot;
-
 
     public GameObject[] dices;
     public Transform player;
@@ -28,7 +34,7 @@ public class BossAttacks : MonoBehaviour
     Flux flux;
     RainSpell spell;
 
-    int a = 4;
+    [SerializeField]int a = 4;
 
     /*private void Start()
     {
@@ -53,38 +59,85 @@ public class BossAttacks : MonoBehaviour
 
     private void Update()
     {
+        if (!GameManager.Instance.CanBossAttack)
+            return;
+
         if (inFight && canCast)
         {
             StartCoroutine(Attack());
         }
     }
+
+    public void EnterPhase2()
+    {
+        CurrentPhase = BossPhase.Phase2;
+
+        attackCd *= 0.7f;
+
+        Debug.Log("PHASE 2");
+    }
+
+
+
     IEnumerator Attack()
     {
         canCast = false;
-        if (a %3 == 1)
+        switch (CurrentPhase)
         {
-            ThrowDice();
+            case BossPhase.Phase1:
+                Phase1Attack();
+                break;
 
-
-            sourceslot.clip = clipslot;
-            sourceslot.Play();
-
-            a++;
-        }
-        else if (a%3 == 2)
-        {
-            spell.CastSpell();
-            a++;
-        }
-        else if (a % 3 == 0)
-        {
-            flux.CastSpell();
-            a++;
+            case BossPhase.Phase2:
+                Phase2Attack();
+                break;
         }
         yield return new WaitForSeconds(attackCd);
         canCast = true;
-    }
 
+    }
+    void Phase1Attack()
+    {
+        if (a % 3 == 1)
+        {
+            ThrowDice();
+
+            sourceslot.clip = clipslot;
+            sourceslot.Play();
+        }
+        else if (a % 3 == 2)
+        {
+            spell.CastSpell();
+        }
+        else
+        {
+            flux.CastSpell();
+        }
+
+        a++;
+    }
+    void Phase2Attack()
+    {
+        if (a % 4 == 1)
+        {
+            ThrowDice();
+        }
+        else if (a % 4 == 2)
+        {
+            spell.CastSpell();
+        }
+        else if (a % 4 == 3)
+        {
+            flux.CastSpell();
+        }
+        else
+        {
+            // Yeni saldırı
+            Debug.Log("NEW ATTACK");
+        }
+
+        a++;
+    }
     public void ThrowDice()
     {
         originalPosition = dices[0].transform.position;
@@ -163,5 +216,14 @@ public class BossAttacks : MonoBehaviour
 
         // Hareket bitince tam yerine oturt
         dice.position = endPos;
+    }
+    public void StopAttacks()
+    {
+        StopAllCoroutines();
+
+        canCast = false;
+
+
+        dices[0].transform.localPosition = new Vector3(-0.35f, 0.35f, 0);
     }
 }

@@ -38,10 +38,10 @@ public class Flux : MonoBehaviour
                     //
                     {
                         GameObject magic = Instantiate(_magicPrefab, spawnposition, Quaternion.identity);
-                        magic.transform.rotation = Quaternion.Euler(0, 0, angle + 120);
+                        magic.transform.rotation = Quaternion.Euler(0, 0, angle + 150);
 
                     elapsedTime = 0f;
-                    StartCoroutine(RotateToTarget(magic.transform.rotation.eulerAngles.z, magic.transform.rotation.eulerAngles.z - 15, magic));
+                    StartCoroutine(RotateToTarget(magic.transform.rotation.eulerAngles.z, magic.transform.rotation.eulerAngles.z - 90, magic));
                         //   magic.transform.localScale = new Vector3(1, scaleX, 1);
 
                     //SoundFXManager.instance.PlaySoundFXClip(clip,transform,1f);

@@ -1,115 +1,103 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class statSystem : MonoBehaviour
 {
-    Rigidbody2D rb;
-    bossSkills bs;
+    [Header("Health")]
+    [SerializeField] private float maxHealth = 100f;
+    [SerializeField] private float currentHealth;
 
-    public float currentHp, maxHp;
-    private float prevHp;
-    public int handler = 0; 
+    [Header("Health Bar")]
+    [SerializeField] private Image healthBar;
 
-    public bool isPlayerAlive;
-    public bool canGetDamage;
+    [Header("Gamble Thresholds (%)")]
+    [SerializeField] private float firstThreshold = 75f;
+    [SerializeField] private float secondThreshold = 50f;
+    [SerializeField] private float thirdThreshold = 25f;
 
-    private float timeSinceLastHit = 0f;
-
-    float percent;
-    public Image healthbar;
-
-    bool a, s, d, f, g, h, j, k, l;
-
-
-    void Start()
+    private bool firstTriggered;
+    private bool secondTriggered;
+    private bool thirdTriggered;
+    BossAttacks attacks;
+    private bool enteredPhase2;
+    float percent = 100;
+    private void Awake()
     {
-        currentHp = maxHp;
-        prevHp = currentHp;
-        isPlayerAlive = true;
-        canGetDamage = true;
-
-        rb = GetComponent<Rigidbody2D>();
-        bs = GetComponent<bossSkills>();
+        attacks = GetComponent<BossAttacks>();
+        currentHealth = maxHealth;
+        UpdateHealthBar();
     }
-
     private void Update()
     {
-        isHpChange();
-        percent = currentHp * 100 / maxHp;
+        
+        if (!enteredPhase2 && percent <= 50)
+        {
+            enteredPhase2 = true;
+            attacks.EnterPhase2();
+        }
+    }
+
+    public void GetDamage(float damage)
+    {
+        currentHealth -= damage;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        percent = currentHealth / maxHealth * 100f;
+
+        UpdateHealthBar();
+        CheckGambleState();
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    void UpdateHealthBar()
+    {
         float v = 10 * (percent) / 100;
         Vector3 targetScale = new Vector3(v, 0.4f, 1f);
-        healthbar.rectTransform.localScale = targetScale;
+        healthBar.rectTransform.localScale = targetScale;
     }
 
-    void isHpChange()
+    void CheckGambleState()
     {
+        
 
-        if (prevHp != currentHp)
+        if (!firstTriggered && percent <= firstThreshold)
         {
-            isPlayerDead();
-
-                    
+            firstTriggered = true;
+            GameManager.Instance.StartGamble();
+            return;
         }
-    }
-    void chechkSkill()
-    {
-        if (80 < currentHp && currentHp < 90 && !a) { bs.CoinFlip(); a = true; }
 
-        if (70 < currentHp && currentHp < 80 && !s) { bs.SpinSlot(); s = true; }
-
-        if (60 < currentHp && currentHp < 70 && !d) { bs.PlayMineFarm(); d = true; }
-
-        if (50 < currentHp && currentHp < 60 && !f) { bs.CoinFlip(); f = true; }
-
-        if (40 < currentHp && currentHp < 50 && !g) { bs.SpinSlot(); g = true; }
-
-        if (30 < currentHp && currentHp < 40 && !h) { bs.PlayMineFarm(); h = true; }
-
-        if (20 < currentHp && currentHp < 30 && !j) { bs.cheat = true; bs.CoinFlip(); j = true; }
-
-        if (10 < currentHp && currentHp < 20 && !k) { bs.SpinSlot(); k = true; }
-
-        if (0 < currentHp && currentHp < 10 && !l) { bs.PlayMineFarm(); l = true; }
-    }
-
-    public void isPlayerDead()
-    {
-        if (currentHp <= 0)
+        if (!secondTriggered && percent <= secondThreshold)
         {
-            KillPlayer();
+            secondTriggered = true;
+            GameManager.Instance.StartGamble();
+            return;
+        }
+
+        if (!thirdTriggered && percent <= thirdThreshold)
+        {
+            thirdTriggered = true;
+            GameManager.Instance.StartGamble();
+            return;
         }
     }
 
-    public void KillPlayer()
+    void Die()
     {
-        isPlayerAlive = false;
-        Debug.Log("Player died!");
-        this.enabled = false;
+        Destroy(gameObject);
     }
 
-    public void GetDamage(float hasarMiktari)
+    public void Heal(float healAmount)
     {
-        if (canGetDamage)
-        {
-            canGetDamage = false;
-            prevHp = currentHp;
-            currentHp -= hasarMiktari;
-            currentHp = Mathf.Clamp(currentHp, 0, maxHp);
-            CameraShake.Instance.Shake(0.3f, 0.5f);
-            chechkSkill();
+        currentHealth += healAmount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-            isPlayerDead();
-
-            timeSinceLastHit = Time.time - timeSinceLastHit;
-            StartCoroutine(DamageCD());
-        }
+        UpdateHealthBar();
     }
 
-
-    private IEnumerator DamageCD()
-    {
-        yield return new WaitForSeconds(0.5f);
-        canGetDamage = true;
-    }
+    public float CurrentHealth => currentHealth;
+    public float MaxHealth => maxHealth;
 }

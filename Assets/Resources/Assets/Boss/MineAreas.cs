@@ -6,6 +6,8 @@ public class MineAreas : MonoBehaviour
     public AudioSource source;
     public AudioClip clip;
 
+    public statSystem boss;
+
     private float timeInsideArea = 0f;
     public float openTime = 2f;
     private bool playerInside;
@@ -34,6 +36,8 @@ public class MineAreas : MonoBehaviour
     }
     private void Update()
     {
+        if (a == 8) { WinMine(); }
+
         if (playerInside)
         {
             timeInsideArea += Time.deltaTime;
@@ -42,8 +46,13 @@ public class MineAreas : MonoBehaviour
                 OpenArea();
                 playerInside = false;
             }
-            if (a == 8) { StartCoroutine(durat()); }
+            
         }
+    }
+    void WinMine()
+    {
+        boss.GetDamage(100);
+        StartCoroutine(durat());
     }
     void OpenArea()
     {
@@ -68,5 +77,6 @@ public class MineAreas : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         Mine.SetActive(false);
+        GameManager.Instance.EndGamble();
     }
 }
