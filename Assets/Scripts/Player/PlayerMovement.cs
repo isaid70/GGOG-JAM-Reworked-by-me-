@@ -19,22 +19,20 @@ public class PlayerMovement : MonoBehaviour
 
     Rigidbody2D rb;
     Animator anim;
+    SpriteRenderer sr;
 
     Vector2 input;
-    Vector2 lastDirection = Vector2.right;
+    Vector2 lastDirection = Vector2.down;
 
     bool isDashing;
     bool isAttacking;
     bool canDash = true;
-    SpriteRenderer sr;
-    PlayerCombat playerCombat;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
-        playerCombat = GetComponent<PlayerCombat>();
     }
 
     void Update()
@@ -42,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
         if (!GameManager.Instance.CanMove)
         {
             rb.linearVelocity = Vector2.zero;
-            anim.Play("Idle");
+            anim.SetFloat("Speed", 0);
             return;
         }
 
@@ -56,9 +54,8 @@ public class PlayerMovement : MonoBehaviour
             if (input != Vector2.zero)
                 lastDirection = input;
         }
-        
-        FlipToMouse();
 
+        FlipToMouse();
         HandleAnimation();
 
         if (Input.GetMouseButtonDown(0)
@@ -68,10 +65,11 @@ public class PlayerMovement : MonoBehaviour
         {
             StartCoroutine(Attack());
         }
+
         if (Input.GetMouseButtonDown(1)
-        && GameManager.Instance.CanAttack
-        && !isAttacking
-        && !isDashing)
+            && GameManager.Instance.CanAttack
+            && !isAttacking
+            && !isDashing)
         {
             StartCoroutine(UseSkill());
         }
@@ -99,26 +97,9 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleAnimation()
     {
-        if (isAttacking)
-        {
-            //anim.Play("Attack");
-            return;
-        }
-
-        if (isDashing)
-        {
-            anim.Play("Dash");
-            return;
-        }
-
-        if (input != Vector2.zero)
-        {
-            anim.Play("Movement");
-        }
-        else
-        {
-            anim.Play("Idle");
-        }
+        anim.SetFloat("MoveX", lastDirection.x);
+        anim.SetFloat("MoveY", lastDirection.y);
+        anim.SetFloat("Speed", input.sqrMagnitude);
     }
 
     IEnumerator Attack()
@@ -127,10 +108,11 @@ public class PlayerMovement : MonoBehaviour
 
         rb.linearVelocity = Vector2.zero;
 
+
         combat.Attack();
 
         yield return new WaitForSeconds(attackDuration);
-
+        combat.swingObject.SetActive(false);
         isAttacking = false;
     }
 
@@ -164,22 +146,22 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator UseSkill()
     {
         isAttacking = true;
+
         switch (activeSkill)
         {
             case 0:
-                // Skill 0 logic
                 break;
+
             case 1:
-                playerCombat.StartOrbit();
+                combat.StartOrbit();
                 break;
+
             case 2:
-                // Skill 2 logic
-                break;
-            default:
-                // Default skill logic
                 break;
         }
+
         yield return new WaitForSeconds(attackDuration);
+
         isAttacking = false;
     }
 

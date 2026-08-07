@@ -17,6 +17,9 @@ public class PlayerCombat : MonoBehaviour
     public float rotateSpeed = 120;
     public float duration = 5;
 
+    [Header("Swing")]
+    public GameObject swingObject;
+    Vector2 direction;
 
 
     void Awake()
@@ -26,20 +29,35 @@ public class PlayerCombat : MonoBehaviour
 
     public void Attack()
     {
-        if (Input.mousePosition.y > Screen.height / 1.7)
+        /*if (Input.mousePosition.y > Screen.height / 1.7)
         {
             anim.Play("Attack_Up");
         }
         else
         {
             anim.Play("Attack_Side");
+        }*/
+
+        direction = GetMouseDirection();
+        swingObject.SetActive(true);
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Debug.Log("Angle: " + angle);
+        if (angle + 180 < 270 && angle + 180 > 90)
+        {
+            //swingObject.GetComponent<SpriteRenderer>().flipY = false;
+            swingObject.transform.rotation = Quaternion.Euler(0, 0, angle - 20);
         }
+        else { //swingObject.GetComponent<SpriteRenderer>().flipY = true;
+               swingObject.transform.rotation = Quaternion.Euler(180, 0, -angle- 20); }
+
+
+
     }
 
     // Animation Event
     public void DealDamage()
     {
-        Vector2 direction = GetMouseDirection();
+        direction = GetMouseDirection();
 
         Vector2 attackCenter =
             (Vector2)transform.position + direction * attackRange;
