@@ -41,6 +41,8 @@ public class PauseMenu : MonoBehaviour
     {
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(true);
+        else
+            Debug.LogWarning("[PauseMenu] pauseMenuPanel is not assigned in Inspector!");
 
         if (optionsPanel != null)
             optionsPanel.SetActive(false);
@@ -63,15 +65,24 @@ public class PauseMenu : MonoBehaviour
 
     public void OpenOptions()
     {
+        Debug.Log("[PauseMenu] OpenOptions() called.");
+
+        if (optionsPanel == null)
+        {
+            Debug.LogError("[PauseMenu] ERROR: optionsPanel reference is NULL in Inspector! Please drag your Options Panel into the PauseMenu script.");
+            return;
+        }
+
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(false);
 
-        if (optionsPanel != null)
-            optionsPanel.SetActive(true);
+        optionsPanel.SetActive(true);
     }
 
     public void CloseOptions()
     {
+        Debug.Log("[PauseMenu] CloseOptions() called.");
+
         if (optionsPanel != null)
             optionsPanel.SetActive(false);
 
