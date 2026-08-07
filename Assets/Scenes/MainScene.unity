@@ -77684,7 +77684,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac8c98e0189af364c827c1966128e453, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boss: {fileID: 0}
+  boss: {fileID: 342681806}
+  gambleFinishTime: 2
   sourceslot: {fileID: 920748979}
   clipslot: {fileID: 8300000, guid: 5dc720360d3996844bcdbf9d5bb3a15f, type: 3}
   sourceyazi: {fileID: 543721595}

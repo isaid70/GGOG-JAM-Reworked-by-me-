@@ -28,13 +28,13 @@ public class GameManager : MonoBehaviour
 
     bool gambleRunning;
     BossAttacks bossAttacks;
-    bossSkills bossSkills;
+    Gambles Gambles;
     void Awake()
     {
         SetCombatState();
         Instance = this;
         bossAttacks = boss.GetComponent<BossAttacks>();
-        bossSkills = GetComponent<bossSkills>();
+        Gambles = GetComponent<Gambles>();
     }
 
     public void SetCombatState()
@@ -107,13 +107,13 @@ public class GameManager : MonoBehaviour
         switch(gamble)
             {
             case 0:
-                bossSkills.SpinSlot();
+                Gambles.SpinSlot();
                 break;
             case 1:
-                bossSkills.CoinFlip();
+                Gambles.CoinFlip();
                 break;
             case 2:
-                bossSkills.PlayMineFarm();
+                Gambles.PlayMineFarm();
                 break;
             default:
                 Debug.LogError("Invalid gamble index: " + gamble);

@@ -2,12 +2,13 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class bossSkills : MonoBehaviour
+public class Gambles : MonoBehaviour
 {
     playerMain player;
     PlayerMovement playerMove;
     statSystemForPlayer playerHp;
     public statSystem boss;
+    public float gambleFinishTime = 2f;
 
     public AudioSource sourceslot;
     public AudioClip clipslot;
@@ -190,7 +191,7 @@ public class bossSkills : MonoBehaviour
     }
     IEnumerator durat(GameObject o)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(gambleFinishTime);
         o.SetActive(false);
         GameManager.Instance.EndGamble();
     }

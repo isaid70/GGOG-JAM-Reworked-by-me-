@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class statSystemForPlayer : MonoBehaviour
 {
     Rigidbody2D rb;
-    bossSkills bs;
+    Gambles bs;
 
     public float currentHp, maxHp;
     float percent;
@@ -33,7 +33,7 @@ public class statSystemForPlayer : MonoBehaviour
         material = spriteRenderer.material;
 
         rb = GetComponent<Rigidbody2D>();
-        bs = GetComponent<bossSkills>();
+        bs = GetComponent<Gambles>();
         Flash();
     }
 
