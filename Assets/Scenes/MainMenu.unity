@@ -265,6 +265,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionsPanel: {fileID: 0}
+  gameSceneName: MainScene
 --- !u!1 &488177527
 GameObject:
   m_ObjectHideFlags: 0
@@ -920,6 +921,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionsPanel: {fileID: 0}
+  gameSceneName: Said_Scene
 --- !u!82 &977901463
 AudioSource:
   m_ObjectHideFlags: 0
