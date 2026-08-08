@@ -28,6 +28,7 @@ public class Gambles : MonoBehaviour
     public Sprite[] flipSprites;
 
 
+    [Header("MineFarm")]
     public int[,] mineFarm = new int[3,3];
     //    public int mineCount, winCount;
     public GameObject[] mineFarmObjSolo;
@@ -35,6 +36,10 @@ public class Gambles : MonoBehaviour
     public GameObject Mine;
     public Transform yer;
     public Sprite minedef;
+
+
+    [Header("CoinFlip")]
+    public int selectedSide = 0;
 
 
     public GameObject magicPrefab;
@@ -66,24 +71,24 @@ public class Gambles : MonoBehaviour
 
     IEnumerator FlipRoutine()
     {
-            for (int i = 0; i < 2; i++)
-            {
-                coinAnim.enabled = true;
-                yield return new WaitForSeconds(animDuration);
-            }
-            coinAnim.enabled = false;
-            coinFlipRes = Random.Range(0, 2);
-            if (coinFlipRes == 0)
-            {
-                coinF.GetComponent<SpriteRenderer>().sprite = flipSprites[0];
+
+        for (int i = 0; i < 2; i++)
+        {
+        coinAnim.enabled = true;
+        yield return new WaitForSeconds(animDuration);
+        }
+        coinAnim.enabled = false;
+        coinFlipRes = Random.Range(0, 2);
+        coinF.GetComponent<SpriteRenderer>().sprite = flipSprites[coinFlipRes];
+        if (coinFlipRes != selectedSide)
+        {
             // Lose situation
             playerHp.GetDamage(20);
         }
-            else
-            {
-                coinF.GetComponent<SpriteRenderer>().sprite = flipSprites[1];
-             // Win situation
-            playerHp.GetHeal(30);
+        else
+        {
+           // Win situation
+           playerHp.GetHeal(30);
         }
 
         StartCoroutine(durat(coinF));

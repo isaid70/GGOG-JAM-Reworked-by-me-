@@ -15,6 +15,12 @@ public class MineAreas : MonoBehaviour
     public int var;
     int a = 0;
     public GameObject Mine;
+    Mine mineWin;
+
+    private void Awake()
+    {
+        mineWin = Mine.GetComponent<Mine>();
+    }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -36,7 +42,6 @@ public class MineAreas : MonoBehaviour
     }
     private void Update()
     {
-        if (a == 8) { WinMine(); }
 
         if (playerInside)
         {
@@ -49,11 +54,7 @@ public class MineAreas : MonoBehaviour
             
         }
     }
-    void WinMine()
-    {
-        boss.GetDamage(100);
-        StartCoroutine(durat());
-    }
+
     void OpenArea()
     {
         if (var == 0)
@@ -68,7 +69,8 @@ public class MineAreas : MonoBehaviour
         }
         else if (var == 1)
         {
-            a++;
+            mineWin.win++;
+            mineWin.ChechkWin();
             GetComponent<SpriteRenderer>().sprite = mineSprites[1];
         }
     }
@@ -76,7 +78,8 @@ public class MineAreas : MonoBehaviour
     IEnumerator durat()
     {
         yield return new WaitForSeconds(2f);
+        mineWin.win = 0;
         Mine.SetActive(false);
-        GameManager.Instance.EndGamble();
+        GameManager.Instance.EndGamble();   
     }
 }

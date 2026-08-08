@@ -6,6 +6,7 @@ public class GambleSelector : MonoBehaviour
     public int a = 0;
     GameObject parent;
     [SerializeField] private float waitTime = 5f;
+    [SerializeField] private CoinFlipSelector cfs;
 
     private Coroutine timer;
     void Start()
@@ -40,7 +41,17 @@ public class GambleSelector : MonoBehaviour
     }
     void OnSelect()
     {
-        GameManager.Instance.SpawnGamble(a);
-        parent.SetActive(false);
+        if (a == 1)
+        {
+            cfs.gameObject.SetActive(true);
+            cfs.SetSelector();
+            parent.SetActive(false);
+        }
+        else
+        {
+            GameManager.Instance.SpawnGamble(a);
+            parent.SetActive(false);
+        }
+
     }
 }
