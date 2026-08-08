@@ -5,25 +5,32 @@ public class TriggerMainEvent : MonoBehaviour
 {
     public Camera cam;
     public GameObject boss;
-
-
     public float targetSize = 20f;
-    public float zoomDuration = 1.5f; // Kaç saniyede tam büyüyecek
+    public float zoomDuration = 1.5f;
 
-    private bool hasZoomed = false;
-
+    private bool hasZoomed;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<statSystemForPlayer>() != null)
+        if (hasZoomed || !collision.TryGetComponent(out PlayerHealth _))
+        {
+            return;
+        }
+
+        hasZoomed = true;
+
+        if (boss != null)
+        {
+            boss.SetActive(true);
+        }
+
+        if (cam != null)
         {
             StartCoroutine(ZoomCamera());
-            hasZoomed = true;
-            boss.SetActive(true);
         }
     }
 
-    IEnumerator ZoomCamera()
+    private IEnumerator ZoomCamera()
     {
         float startSize = cam.orthographicSize;
         float timeElapsed = 0f;
@@ -35,6 +42,6 @@ public class TriggerMainEvent : MonoBehaviour
             yield return null;
         }
 
-        cam.orthographicSize = targetSize; // Son deðeri sabitle
+        cam.orthographicSize = targetSize;
     }
 }

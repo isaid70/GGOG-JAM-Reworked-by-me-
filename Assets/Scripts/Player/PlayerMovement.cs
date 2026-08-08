@@ -20,6 +20,8 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody2D rb;
     Animator anim;
     SpriteRenderer sr;
+    Camera mainCamera;
+    PlayerInputManager inputManager;
 
     Vector2 input;
     Vector2 lastDirection = Vector2.down;
@@ -33,49 +35,62 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
+        mainCamera = Camera.main;
+    }
+
+    void Start()
+    {
+        inputManager = PlayerInputManager.Instance;
     }
 
     void Update()
     {
-        if (!GameManager.Instance.CanMove)
+        if (inputManager == null)
+        {
+            inputManager = PlayerInputManager.Instance;
+        }
+
+        if (!CanMove())
         {
             rb.linearVelocity = Vector2.zero;
-            anim.SetFloat("Speed", 0);
+            SetSpeed(0);
             return;
         }
 
         if (!isDashing && !isAttacking)
         {
-            input.x = Input.GetAxisRaw("Horizontal");
-            input.y = Input.GetAxisRaw("Vertical");
-
-            input.Normalize();
+            input = inputManager != null ? inputManager.ReadMovement().normalized : Vector2.zero;
 
             if (input != Vector2.zero)
+            {
                 lastDirection = input;
+            }
         }
 
         FlipToMouse();
         HandleAnimation();
 
-        if (Input.GetMouseButtonDown(0)
-            && GameManager.Instance.CanAttack
+        if (inputManager != null
+            && inputManager.AttackWasPressedThisFrame()
+            && CanAttack()
             && !isAttacking
             && !isDashing)
         {
             StartCoroutine(Attack());
         }
 
-        if (Input.GetMouseButtonDown(1)
-            && GameManager.Instance.CanAttack
+        if (inputManager != null
+            && inputManager.SkillWasPressedThisFrame()
+            && CanAttack()
             && !isAttacking
             && !isDashing)
         {
             StartCoroutine(UseSkill());
         }
 
-        if (Input.GetKeyDown(KeyCode.Space)
-            && GameManager.Instance.CanDash
+        if (inputManager != null
+            && inputManager.DashWasPressedThisFrame()
+            && CanDash()
             && canDash
             && !isAttacking
             && !isDashing)
@@ -86,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!GameManager.Instance.CanMove)
+        if (!CanMove())
             return;
 
         if (isDashing || isAttacking)
@@ -97,9 +112,14 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleAnimation()
     {
+        if (anim == null)
+        {
+            return;
+        }
+
         anim.SetFloat("MoveX", lastDirection.x);
         anim.SetFloat("MoveY", lastDirection.y);
-        anim.SetFloat("Speed", input.sqrMagnitude);
+        SetSpeed(input.sqrMagnitude);
     }
 
     IEnumerator Attack()
@@ -109,10 +129,10 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
 
 
-        combat.Attack();
+        combat?.Attack();
 
         yield return new WaitForSeconds(attackDuration);
-        combat.swingObject.SetActive(false);
+        combat?.HideSwing();
         isAttacking = false;
     }
 
@@ -121,7 +141,7 @@ public class PlayerMovement : MonoBehaviour
         canDash = false;
         isDashing = true;
 
-        anim.Play("Dash");
+        anim?.Play("Dash");
 
         rb.linearVelocity = lastDirection * dashSpeed;
 
@@ -138,7 +158,17 @@ public class PlayerMovement : MonoBehaviour
 
     void FlipToMouse()
     {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if (sr == null || inputManager == null)
+        {
+            return;
+        }
+
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
+
+        Vector3 mousePos = inputManager.GetPointerWorldPosition(mainCamera);
 
         sr.flipX = mousePos.x < transform.position.x;
     }
@@ -168,5 +198,25 @@ public class PlayerMovement : MonoBehaviour
     public void GiveSkill(int skill)
     {
         activeSkill = skill;
+    }
+
+    bool CanMove()
+    {
+        return GameManager.Instance == null || GameManager.Instance.CanMove;
+    }
+
+    bool CanAttack()
+    {
+        return GameManager.Instance == null || GameManager.Instance.CanAttack;
+    }
+
+    bool CanDash()
+    {
+        return GameManager.Instance == null || GameManager.Instance.CanDash;
+    }
+
+    void SetSpeed(float speed)
+    {
+        anim?.SetFloat("Speed", speed);
     }
 }

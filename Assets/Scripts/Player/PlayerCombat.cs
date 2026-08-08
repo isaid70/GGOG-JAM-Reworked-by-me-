@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
@@ -20,38 +20,33 @@ public class PlayerCombat : MonoBehaviour
     [Header("Swing")]
     public GameObject swingObject;
     Vector2 direction;
+    Camera mainCamera;
 
 
     void Awake()
     {
         anim = GetComponent<Animator>();
+        mainCamera = Camera.main;
     }
 
     public void Attack()
     {
-        /*if (Input.mousePosition.y > Screen.height / 1.7)
+        direction = GetMouseDirection();
+        if (swingObject == null)
         {
-            anim.Play("Attack_Up");
+            return;
+        }
+
+        swingObject.SetActive(true);
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        if (angle + 180 < 270 && angle + 180 > 90)
+        {
+            swingObject.transform.rotation = Quaternion.Euler(0, 0, angle - 20);
         }
         else
         {
-            anim.Play("Attack_Side");
-        }*/
-
-        direction = GetMouseDirection();
-        swingObject.SetActive(true);
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        Debug.Log("Angle: " + angle);
-        if (angle + 180 < 270 && angle + 180 > 90)
-        {
-            //swingObject.GetComponent<SpriteRenderer>().flipY = false;
-            swingObject.transform.rotation = Quaternion.Euler(0, 0, angle - 20);
+            swingObject.transform.rotation = Quaternion.Euler(180, 0, -angle - 20);
         }
-        else { //swingObject.GetComponent<SpriteRenderer>().flipY = true;
-               swingObject.transform.rotation = Quaternion.Euler(180, 0, -angle- 20); }
-
-
-
     }
 
     // Animation Event
@@ -69,9 +64,7 @@ public class PlayerCombat : MonoBehaviour
 
         foreach (Collider2D hit in hits)
         {
-            statSystem boss = hit.GetComponent<statSystem>();
-
-            if (boss != null)
+            if (hit.TryGetComponent(out BossHealth boss))
             {
                 boss.GetDamage(damage);
             }
@@ -80,8 +73,14 @@ public class PlayerCombat : MonoBehaviour
 
     Vector2 GetMouseDirection()
     {
-        Vector3 mouse =
-            Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
+
+        Vector3 mouse = mainCamera != null && PlayerInputManager.Instance != null
+            ? PlayerInputManager.Instance.GetPointerWorldPosition(mainCamera)
+            : transform.position + Vector3.right;
 
         return (mouse - transform.position).normalized;
     }
@@ -90,10 +89,10 @@ public class PlayerCombat : MonoBehaviour
     {
         Vector2 direction = Vector2.right;
 
-        if (Camera.main != null)
+        Camera previewCamera = Camera.main;
+        if (previewCamera != null && PlayerInputManager.Instance != null)
         {
-            Vector3 mouse =
-                Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 mouse = PlayerInputManager.Instance.GetPointerWorldPosition(previewCamera);
 
             direction = (mouse - transform.position).normalized;
         }
@@ -131,4 +130,13 @@ public class PlayerCombat : MonoBehaviour
 
         orbitObject.SetActive(false);
     }
+
+    public void HideSwing()
+    {
+        if (swingObject != null)
+        {
+            swingObject.SetActive(false);
+        }
+    }
 }
+

@@ -28,13 +28,33 @@ public class GameManager : MonoBehaviour
 
     bool gambleRunning;
     BossAttacks bossAttacks;
-    Gambles Gambles;
+    Gambles gambles;
+
     void Awake()
     {
-        SetCombatState();
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
-        bossAttacks = boss.GetComponent<BossAttacks>();
-        Gambles = GetComponent<Gambles>();
+        SetCombatState();
+
+        if (boss != null)
+        {
+            bossAttacks = boss.GetComponent<BossAttacks>();
+        }
+
+        gambles = GetComponent<Gambles>();
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
     public void SetCombatState()
@@ -51,8 +71,12 @@ public class GameManager : MonoBehaviour
     {
         CurrentState = GameState.Gamble;
 
-        bossAttacks.StopAttacks();
-        bossAttacks.canCast = true;
+        if (bossAttacks != null)
+        {
+            bossAttacks.StopAttacks();
+            bossAttacks.canCast = true;
+        }
+
         CanBossAttack = false;
         CanMove = true;
         CanAttack = false;
@@ -63,6 +87,13 @@ public class GameManager : MonoBehaviour
     {
         if (gambleRunning)
             return;
+
+        if (player == null || boss == null || playerGamblePoint == null || bossGamblePoint == null)
+        {
+            Debug.LogError("[GameManager] Gamble references are not assigned.");
+            return;
+        }
+
         StartCoroutine(GambleRoutine());
     }
 
@@ -79,7 +110,10 @@ public class GameManager : MonoBehaviour
         boss.transform.position = bossGamblePoint.position;
 
         SetGambleState();
-        parent.SetActive(true);
+        if (parent != null)
+        {
+            parent.SetActive(true);
+        }
 
 
         yield break;
@@ -107,13 +141,13 @@ public class GameManager : MonoBehaviour
         switch(gamble)
             {
             case 0:
-                Gambles.SpinSlot();
+                gambles?.SpinSlot();
                 break;
             case 1:
-                Gambles.CoinFlip();
+                gambles?.CoinFlip();
                 break;
             case 2:
-                Gambles.PlayMineFarm();
+                gambles?.PlayMineFarm();
                 break;
             default:
                 Debug.LogError("Invalid gamble index: " + gamble);

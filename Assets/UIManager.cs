@@ -22,7 +22,6 @@ public class UIManager : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
-        Debug.Log("Quit");
     }
 
     public void RestartGame()
