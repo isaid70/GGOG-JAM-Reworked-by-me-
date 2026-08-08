@@ -67,6 +67,16 @@ public class GameManager : MonoBehaviour
         CanDash = true;
     }
 
+    public void SetIntroState()
+    {
+        CurrentState = GameState.Intro;
+
+        CanBossAttack = false;
+        CanMove = false;
+        CanAttack = false;
+        CanDash = false;
+    }
+
     public void SetGambleState()
     {
         CurrentState = GameState.Gamble;
