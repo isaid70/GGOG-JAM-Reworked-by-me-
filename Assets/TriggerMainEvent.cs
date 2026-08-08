@@ -35,6 +35,15 @@ public class TriggerMainEvent : MonoBehaviour
     [Header("Timing")]
     public float holdTime = 0.15f;
 
+    [Header("Camera Settings")]
+    public bool changeCameraZoom = true;
+    public float targetOrthographicSize = 7f;
+    public float zoomDuration = 1.0f;
+
+    [Header("Door / Barrier Settings")]
+    public Collider2D doorCollider;
+    public GameObject doorObject;
+
     private bool hasTriggered;
 
     private Vector2 bossTarget;
@@ -63,6 +72,16 @@ public class TriggerMainEvent : MonoBehaviour
 
         hasTriggered = true;
 
+        if (doorCollider != null)
+        {
+            doorCollider.isTrigger = false;
+        }
+
+        if (doorObject != null)
+        {
+            doorObject.SetActive(true);
+        }
+
         StartCoroutine(BossIntroRoutine());
     }
 
@@ -83,11 +102,43 @@ public class TriggerMainEvent : MonoBehaviour
 
         GameManager.Instance?.SetCombatState();
 
+        if (changeCameraZoom)
+        {
+            StartCoroutine(ZoomCamera());
+        }
+
         yield return AnimateExit();
 
         introCanvas.SetActive(false);
 
         Destroy(introCanvas);
+    }
+
+    private IEnumerator ZoomCamera()
+    {
+        Camera mainCam = Camera.main;
+        if (mainCam == null) yield break;
+
+        float startSize = mainCam.orthographicSize;
+        float elapsed = 0f;
+
+        while (elapsed < zoomDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / zoomDuration;
+
+            if (mainCam.orthographic)
+            {
+                mainCam.orthographicSize = Mathf.Lerp(startSize, targetOrthographicSize, t);
+            }
+
+            yield return null;
+        }
+
+        if (mainCam.orthographic)
+        {
+            mainCam.orthographicSize = targetOrthographicSize;
+        }
     }
 
     private void PrepareStartPositions()
