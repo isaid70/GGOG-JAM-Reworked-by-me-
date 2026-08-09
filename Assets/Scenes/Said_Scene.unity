@@ -454860,7 +454860,7 @@ MonoBehaviour:
   maxHp: 100
   isPlayerAlive: 0
   canGetDamage: 0
-  healthBar: {fileID: 0}
+  healthBar: {fileID: 1927518515}
 --- !u!212 &1329611082
 SpriteRenderer:
   m_ObjectHideFlags: 0

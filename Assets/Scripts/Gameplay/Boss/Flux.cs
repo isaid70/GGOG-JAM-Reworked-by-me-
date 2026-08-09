@@ -23,7 +23,7 @@ public class Flux : MonoBehaviour
     public GameObject enemiesInRange;
 
 
-    public void CastSpell()
+    public void CastSpell(BossPhase CurrentPhase, Transform boss)
     {
         int magicToCast = 1 ;
 
@@ -38,7 +38,8 @@ public class Flux : MonoBehaviour
                     //
                     {
                         GameObject magic = Instantiate(_magicPrefab, spawnposition, Quaternion.identity);
-                        magic.transform.rotation = Quaternion.Euler(0, 0, angle + 150);
+                    magic.transform.parent = boss;
+                    magic.transform.rotation = Quaternion.Euler(0, 0, angle + 150);
 
                     elapsedTime = 0f;
                     StartCoroutine(RotateToTarget(magic.transform.rotation.eulerAngles.z, magic.transform.rotation.eulerAngles.z - 90, magic));

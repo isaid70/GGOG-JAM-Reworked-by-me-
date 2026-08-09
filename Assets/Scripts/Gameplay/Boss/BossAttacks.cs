@@ -103,7 +103,7 @@ public class BossAttacks : MonoBehaviour
         }
         else
         {
-            flux?.CastSpell();
+            flux?.CastSpell(CurrentPhase, this.transform);
         }
 
         attackIndex++;
@@ -123,7 +123,7 @@ public class BossAttacks : MonoBehaviour
         }
         else if (pattern == 3)
         {
-            flux?.CastSpell();
+            flux?.CastSpell(CurrentPhase, this.transform);
         }
         else
         {
