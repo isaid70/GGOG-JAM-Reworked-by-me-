@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum BossPhase
@@ -103,7 +104,7 @@ public class BossAttacks : MonoBehaviour
         }
         else
         {
-            flux?.CastSpell(CurrentPhase, this.transform);
+            flux?.CastSpell(this.transform);
         }
 
         attackIndex++;
@@ -111,7 +112,7 @@ public class BossAttacks : MonoBehaviour
 
     private void Phase2Attack()
     {
-        int pattern = attackIndex % 4;
+        int pattern = attackIndex % 3;
 
         if (pattern == 1)
         {
@@ -121,13 +122,9 @@ public class BossAttacks : MonoBehaviour
         {
             spell?.CastSpell();
         }
-        else if (pattern == 3)
+        else if (pattern == 0)
         {
-            flux?.CastSpell(CurrentPhase, this.transform);
-        }
-        else
-        {
-            ThrowDice();
+            flux?.CastSpell2(this.transform, 1000);
         }
 
         attackIndex++;
