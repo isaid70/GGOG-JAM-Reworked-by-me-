@@ -14,6 +14,7 @@ public class Gambles : MonoBehaviour
     [Header("Slot")]
     public GameObject[] slotObjes;
     public Sprite[] slotSprites;
+    [SerializeField]private CasinoSlotMachine slotMachine;
 
     [Header("Coin Flip")]
     public GameObject coinF;
@@ -73,7 +74,7 @@ public class Gambles : MonoBehaviour
             slotAnimator.enabled = true;
         }
 
-        StartCoroutine(SpinRoutine());
+        StartCoroutine(slotMachine.SpinRoutine());
     }
 
     public void PlayMineFarm()
