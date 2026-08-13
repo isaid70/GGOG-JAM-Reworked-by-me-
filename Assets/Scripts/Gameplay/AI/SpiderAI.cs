@@ -6,11 +6,17 @@ public class SpiderAI : BaseAI
     public enum CreatureState { Idle, Chase, RangedAttack, LeapAttack }
     public CreatureState currentState;
 
+    [Header("Detection")]
+    [SerializeField] private float detectionRange = 6f;
+    [SerializeField] private Transform playerTarget;
+
     [Header("Ranged Attack")]
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float rangedCooldown = 3f;
     private float _nextRangedTime;
+
+
 
     [Header("2D Leap / Dash Skill")]
     public float leapDistance = 4f;

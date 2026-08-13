@@ -2,31 +2,29 @@ using UnityEngine;
 
 public abstract class BaseAI : MonoBehaviour
 {
-    [Header("Base Settings")]
-    public Transform playerTarget;
-    public float moveSpeed = 4f;
-    public float detectionRange = 10f;
+    [Header("Base AI Settings")]
+    public Transform PlayerTarget;
+    public float MoveSpeed = 3.5f;
+    public float DetectionRange = 8f;
 
     protected Rigidbody2D Rb2D;
 
     protected virtual void Awake()
     {
         Rb2D = GetComponent<Rigidbody2D>();
-
+        Rb2D.gravityScale = 0;
         Rb2D.freezeRotation = true;
 
-        if (playerTarget == null)
-            playerTarget = GameObject.FindWithTag("Player")?.transform;
+        if (PlayerTarget == null)
+            PlayerTarget = GameObject.FindWithTag("Player")?.transform;
     }
 
-    public void MoveToPlayer()
+    public void MoveToPlayer(float speedMultiplier = 1f)
     {
-        if (playerTarget == null) return;
+        if (PlayerTarget == null) return;
 
-        Vector2 direction = (playerTarget.position - transform.position).normalized;
-
-        Rb2D.linearVelocity = direction * moveSpeed;
-
+        Vector2 direction = (PlayerTarget.position - transform.position).normalized;
+        Rb2D.linearVelocity = direction * (MoveSpeed * speedMultiplier);
         FlipSprite(direction.x);
     }
 
@@ -37,16 +35,13 @@ public abstract class BaseAI : MonoBehaviour
 
     public void FlipSprite(float inputX)
     {
-        if (inputX > 0.1f)
-            transform.localScale = new Vector3(1, 1, 1); // Sağ
-        else if (inputX < -0.1f)
-            transform.localScale = new Vector3(-1, 1, 1); // sol
+        if (inputX > 0.1f) transform.localScale = new Vector3(1, 1, 1);
+        else if (inputX < -0.1f) transform.localScale = new Vector3(-1, 1, 1);
     }
-
 
     public float GetDistanceToPlayer()
     {
-        if (playerTarget == null) return float.MaxValue;
-        return Vector2.Distance(transform.position, playerTarget.position);
+        if (PlayerTarget == null) return float.MaxValue;
+        return Vector2.Distance(transform.position, PlayerTarget.position);
     }
 }
