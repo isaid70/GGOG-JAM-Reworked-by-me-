@@ -8,12 +8,14 @@ public abstract class BaseAI : MonoBehaviour
     public float DetectionRange = 8f;
 
     protected Rigidbody2D Rb2D;
+    protected SpriteRenderer SpriteRenderer;
 
     protected virtual void Awake()
     {
         Rb2D = GetComponent<Rigidbody2D>();
         Rb2D.gravityScale = 0;
         Rb2D.freezeRotation = true;
+        SpriteRenderer = GetComponent<SpriteRenderer>();
 
         if (PlayerTarget == null)
             PlayerTarget = GameObject.FindWithTag("Player")?.transform;
@@ -35,8 +37,8 @@ public abstract class BaseAI : MonoBehaviour
 
     public void FlipSprite(float inputX)
     {
-        if (inputX > 0.1f) transform.localScale = new Vector3(1, 1, 1);
-        else if (inputX < -0.1f) transform.localScale = new Vector3(-1, 1, 1);
+        if (inputX > 0.1f) SpriteRenderer.flipX = false;
+        else if (inputX < -0.1f) SpriteRenderer.flipX = true;
     }
 
     public float GetDistanceToPlayer()
